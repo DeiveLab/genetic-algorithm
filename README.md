@@ -7,7 +7,7 @@ Criar um algoritmo genético modificado para calcular os valores mínimos de alg
 ## Passo a passo (como genericamente proposto em aula)
 1. Definir parâmetros (tamanho da população, probabilidade de crossover, probabilidade de mutação, número de gerações, número de bits, quantidade de variáveis, função, intervalo da função).
 2. Gerar população inicial aleatoriamente.
-3. Calcular fitner da população.
+3. Calcular fitness da população.
 4. Ordenar população com base no fitness.
 5. Calcular média da população e a pessoa com maior fitness.
 6. Enquanto não tiver atingido o número de gerações passados por parâmetro:

@@ -1,5 +1,6 @@
 import random
-import matplotlib.pyplot as plt
+import math
+from matplotlib import pyplot as plt
 
 class GenericAlgorithm():
     def __init__(self, pop_size, cross_prob, mut_prob, max_gen, variable_bits_size, num_of_variables, min_max_interval, function):
@@ -13,11 +14,11 @@ class GenericAlgorithm():
         self.PERSON_BIT_SIZE = variable_bits_size * num_of_variables
         self.MIN_MAX_INTERVAL = min_max_interval
         self.CURRENT_GENERATION = 0
+        self.MEAN_FITNESS = []
 
     def get_real_value_from_chromosome(self, person_chromosome):
-        return self.extract_integer_value_from_chromosome(person_chromosome)
-        # min_value, max_value = self.MIN_MAX_INTERVAL
-        # return min_value + (max_value - min_value) * (self.extract_integer_value_from_chromosome(person_chromosome) / ((2 ** self.VARIABLE_BITS_SIZE) - 1))
+        min_value, max_value = self.MIN_MAX_INTERVAL
+        return min_value + (max_value - min_value) * (self.extract_integer_value_from_chromosome(person_chromosome) / ((2 ** self.VARIABLE_BITS_SIZE) - 1))
 
     def extract_integer_value_from_chromosome(self, person_chromosome):
         result = 0
@@ -43,6 +44,8 @@ class GenericAlgorithm():
 
     def calculate_population_fitness(self, population):
         result = [self.get_person_fitness(person) for person in population]
+        population_mean = sum(result)/len(result)
+        self.MEAN_FITNESS.append(population_mean)
         return result
 
     def order_population_by_fitness(self, population):
@@ -91,10 +94,10 @@ class GenericAlgorithm():
     def generate_population_by_simple_crossover(self, population, population_fitness):
         new_population = []
         for _ in range(0, len(population), 2):
-            # if random.random() <= self.CROSSOVER_PROBABILITY:
-            parents = self.choose_parents_roulette(population, population_fitness)
-            children = self.get_children_from_parents_simple_crossover(parents)
-            new_population = new_population + children
+            if random.random() <= self.CROSSOVER_PROBABILITY:
+                parents = self.choose_parents_roulette(population, population_fitness)
+                children = self.get_children_from_parents_simple_crossover(parents)
+                new_population = new_population + children
         new_population.append(population[0])
         return new_population
 
@@ -102,10 +105,10 @@ class GenericAlgorithm():
         new_population = []
         random_mask = [self.get_random_bit() for _ in range(self.PERSON_BIT_SIZE)]
         for _ in range(0, len(population), 2):
-            # if random.random() <= self.CROSSOVER_PROBABILITY:
-            parents = self.choose_parents_roulette(population, population_fitness)
-            children = self.get_children_from_parents_uniform_crossover(parents, random_mask)
-            new_population = new_population + children
+            if random.random() <= self.CROSSOVER_PROBABILITY:
+                parents = self.choose_parents_roulette(population, population_fitness)
+                children = self.get_children_from_parents_uniform_crossover(parents, random_mask)
+                new_population = new_population + children
         new_population.append(population[0])
         return new_population
 
@@ -132,6 +135,13 @@ class GenericAlgorithm():
             print('Fittest person: ' + str(self.extract_integer_value_from_chromosome(pop[0])))
 
             self.CURRENT_GENERATION = self.CURRENT_GENERATION + 1
+
+        plt.plot(range(self.MAX_GENERATIONS + 1), self.MEAN_FITNESS)
+        plt.grid(True, zorder=0)
+        plt.title("Media do fitness das populacoes")
+        plt.xlabel("Geracao")
+        plt.ylabel("Media da populacao")
+        plt.show()
         return self.get_fittest_person(pop), pop
 
     def teste(self):
@@ -143,7 +153,7 @@ class GenericAlgorithm():
 def algo(x):
     return x**2
 
-a = GenericAlgorithm(150, 0.8, 0.5, 200, 20, 1, [-1, 1], algo)
+a = GenericAlgorithm(150, 0.8, 0.5, 500, 32, 1, [-5, 5], algo)
 # pessoa = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1]
 # print(a.get_real_value_from_chromosome(pessoa))
 # print(a.get_person_func_value(pessoa))
@@ -153,6 +163,6 @@ a = GenericAlgorithm(150, 0.8, 0.5, 200, 20, 1, [-1, 1], algo)
 
 ue, pop = a.get_best_variables()
 print(ue)
-print(pop)
+# print(pop)
 
 # a.teste()
