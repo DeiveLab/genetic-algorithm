@@ -30,7 +30,7 @@ class GenericAlgorithm():
         return [person_chromosome[i:i + self.VARIABLE_BITS_SIZE] for i in range(0, len(person_chromosome), self.VARIABLE_BITS_SIZE)]
 
     def get_person_fitness(self, person_chromosome):
-        return (1 / ((self.get_person_func_value(person_chromosome)) + (2 ** self.PERSON_BIT_SIZE)))
+        return (1 / self.get_person_func_value(person_chromosome))
     
     def get_person_func_value(self, person_chromosome):
         variables = [self.get_real_value_from_chromosome(variable) for variable in self.split_chromosome_variables(person_chromosome)]
@@ -132,7 +132,9 @@ class GenericAlgorithm():
             pop4 = self.generate_random_population()
 
             pop, pop_fit = self.choose_fittest_people_from_populations(pop1, pop2, pop3, pop4)
-            print('Fittest person: ' + str(self.extract_integer_value_from_chromosome(pop[0])))
+            variables = [self.get_real_value_from_chromosome(variable) for variable in self.split_chromosome_variables(pop[0])]
+            message = 'Fittest variable(s): ' + str(variables)
+            print(message)
 
             self.CURRENT_GENERATION = self.CURRENT_GENERATION + 1
 
@@ -149,20 +151,56 @@ class GenericAlgorithm():
             print(self.CURRENT_GENERATION)
             self.CURRENT_GENERATION = self.CURRENT_GENERATION + 1
 
+def gold(x, y):
+    a = 1 + (x+y+1)**2*(19-14*x+3*x**2-14*y+6*x*y+3*y**2)
+    b = 30 + (2*x-3*y)**2*(18-32*x+12*x**2+48*y-36*x*y+27*y**2)
+    return a * b
 
-def algo(x):
-    return x**2
+def Ackley(x, y):
+    variables = [x,y]
+    n = 2
+    a = 20
+    b = 0.2
+    c = 2 * math.pi
+    s1 = 0
+    s2 = 0
+    for variable in variables:
+        s1 = s1 + variable**2
+        s2 = s2 + math.cos(c * variable)
+    return -a * math.e**(-b * math.sqrt((1/n)*s1)) - math.e**((1/n)*s2) + a + math.e
+    
+def sumS(x, y):
+    variables = [x, y]
+    n=2
+    s=0
+    for j in range(1, n+1):
+        s=s+j*(variables[j-1]**2)
+    return s
 
-a = GenericAlgorithm(150, 0.8, 0.5, 500, 32, 1, [-5, 5], algo)
-# pessoa = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1]
-# print(a.get_real_value_from_chromosome(pessoa))
-# print(a.get_person_func_value(pessoa))
-# pop =[[0, 1, 1, 0], [1, 0, 1, 0], [1, 1, 1, 0], [0, 0, 1, 0], [0, 0, 0, 0]]
-# pop, fit = a.order_population_by_fitness(pop)
-# print(pop)
+def deJong(x, y):
+    z = 100*(((x**2) - (y**2))**2) + ((1-(x**2))**2)
+    return z
+
+def rastrigin(x, y):
+    return (x**2)+(y**2)-(10*math.cos(2*math.pi*x))-(10*math.cos(2*math.pi*y))+10
+
+def bump(x, y):
+    if (x*y) < 0.75:
+        z = None
+    elif (x+y > 7.5*2):
+        z = None
+    else:
+        temp0 = math.pow(math.cos(x), 4) + math.pow(math.cos(y), 4)
+        temp1 = 2 * math.pow(math.cos(x), 2) * math.pow(math.cos(y), 2)
+        temp2 = math.sqrt(math.pow(x, 2) + 2 * math.pow(y, 2))
+        z = -math.abs((temp0 - temp1) / temp2)
+    return z
+
+a = GenericAlgorithm(500, 0.8, 0.5, 10000, 32, 2, [-5, 5], rastrigin)
 
 ue, pop = a.get_best_variables()
-print(ue)
+variables = [a.get_real_value_from_chromosome(variable) for variable in a.split_chromosome_variables(pop[0])]
+print(variables)
 # print(pop)
 
 # a.teste()
