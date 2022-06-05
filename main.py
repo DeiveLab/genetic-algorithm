@@ -142,7 +142,7 @@ class GenericAlgorithm():
         plt.grid(True, zorder=0)
         plt.title("Media do fitness das populacoes")
         plt.xlabel("Geracao")
-        plt.ylabel("Media da populacao")
+        plt.ylabel("Media da fit da geracao")
         plt.show()
         return self.get_fittest_person(pop), pop
 
@@ -152,8 +152,8 @@ class GenericAlgorithm():
             self.CURRENT_GENERATION = self.CURRENT_GENERATION + 1
 
 def gold(x, y):
-    a = 1 + (x+y+1)**2*(19-14*x+3*x**2-14*y+6*x*y+3*y**2)
-    b = 30 + (2*x-3*y)**2*(18-32*x+12*x**2+48*y-36*x*y+27*y**2)
+    a = 1 + ((x+y+1)**2)*(19-(14*x)+(3*(x**2))-(14*y)+(6*x*y)+(3*(y**2)))
+    b = 30 + (((2*x)-(3*y))**2)*(18-(32*x)+(12*(x**2))+(48*y)-(36*x*y)+(27*(y**2)))
     return a * b
 
 def Ackley(x, y):
@@ -186,17 +186,19 @@ def rastrigin(x, y):
 
 def bump(x, y):
     if (x*y) < 0.75:
-        z = None
+        # Pra tornar o fitness o menor possível
+        z = 2**32
     elif (x+y > 7.5*2):
-        z = None
+        # Pra tornar o fitness o menor possível
+        z = 2**32
     else:
         temp0 = math.pow(math.cos(x), 4) + math.pow(math.cos(y), 4)
         temp1 = 2 * math.pow(math.cos(x), 2) * math.pow(math.cos(y), 2)
         temp2 = math.sqrt(math.pow(x, 2) + 2 * math.pow(y, 2))
-        z = -math.abs((temp0 - temp1) / temp2)
+        z = -abs((temp0 - temp1) / temp2)
     return z
 
-a = GenericAlgorithm(500, 0.8, 0.5, 10000, 32, 2, [-5, 5], rastrigin)
+a = GenericAlgorithm(500, 0.8, 0.5, 10000, 32, 2, [-5, 5], bump)
 
 ue, pop = a.get_best_variables()
 variables = [a.get_real_value_from_chromosome(variable) for variable in a.split_chromosome_variables(pop[0])]
